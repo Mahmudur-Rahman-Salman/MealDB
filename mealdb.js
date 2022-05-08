@@ -1,19 +1,24 @@
-const searchFood = () => {
+const searchFood = async () => {
   const searchField = document.getElementById('search-field');
   const searchText = searchField.value;
   searchField.value = " ";
 
   const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${searchText}`;
 
+  const res = await fetch(url);
+  const data = await res.json();
+  displaySearchResult(data.meals);
 
-  fetch(url)
-    .then(res => res.json())
-    .then(data => displaySearchResult(data.meals));
+  // fetch(url)
+  //   .then(res => res.json())
+  //   .then(data => displaySearchResult(data.meals));
 }
 
 
 const displaySearchResult = meals => {
   const searchResult = document.getElementById('search-result');
+  searchResult.textContent = "";
+
   meals.forEach(meal => {
     // console.log(meal);
     const div = document.createElement('div');
@@ -32,33 +37,33 @@ const displaySearchResult = meals => {
 
 }
 
-const loadMealDetails = mealId => {
+const loadMealDetails = async mealId => {
   const url = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`
 
-  fetch(url)
-    .then(res => res.json())
-    .then(data => displayMealDetails(data.meals[0]))
+  const res = await fetch(url);
+  const data = await res.json();
+  displayMealDetails(data.meals[0])
+
+  // fetch(url)
+  //   .then(res => res.json())
+  //   .then(data => displayMealDetails(data.meals[0]))
 }
 
 
 const displayMealDetails = meal => {
   console.log(meal)
   const mealDetails = document.getElementById('single-meal-details');
+  mealDetails.textContent = '';
   const div = document.createElement('div');
-  div.classList.add('card', 'mx-auto', 'w-50');
+  div.classList.add('card', 'mx-auto', 'w-25');
   div.innerHTML = `
-    <div class="row g-0">
-        <div class="col-md-4">
-               <img src="${meal.strMealThumb}" class="img-fluid rounded-start" alt="img">
-       </div>
-      <div class="col-md-8">
-      <div class="card-body">
-          <h5 class="card-title">${meal.strMeal}</h5>
-          <p class="card-text">${meal.strInstructions.slice(0, 100)}</p>
-          <p class="card-text"><small class="text-muted">${meal.strCategory}</small></p>
-      </div>
+<img src="${meal.strMealThumb}" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">${meal.strMeal}</h5>
+    <p class="card-text">${meal.strInstructions.slice(0, 100)}</p>
+    <p class="card-text"><small class="text-muted">${meal.strCategory}</small></p>
+    <a href="${meal.strYoutube}" class="btn btn-primary" target="_blank">Click here</a>
   </div>
-</div>
   `;
   mealDetails.appendChild(div);
 }
